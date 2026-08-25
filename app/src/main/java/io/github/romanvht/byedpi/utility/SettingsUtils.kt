@@ -17,7 +17,13 @@ import java.io.File
 
 object SettingsUtils {
     private const val TAG = "SettingsUtils"
-    private val separatePreferenceKeys = setOf("byedpi_command_history", "selected_apps")
+    private val separatePreferenceKeys = setOf(
+        "byedpi_command_history",
+        "selected_apps",
+        // Internal authentication token for exported launcher shortcuts. It must
+        // never be exported to, or overwritten from, a settings backup.
+        "shortcut_token",
+    )
 
     enum class Section {
         SETTINGS,

@@ -42,6 +42,20 @@
         app:useSimpleSummaryProvider="true"
         app:iconSpaceReserved="false" />
 
+    <SwitchPreference
+        android:key="byedpi_proxytest_stop_on_success"
+        android:title="@string/test_stop_on_success"
+        android:summary="@string/test_stop_on_success_summary"
+        android:defaultValue="true"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:key="byedpi_proxytest_auto_apply"
+        android:title="@string/test_auto_apply"
+        android:summary="@string/test_auto_apply_summary"
+        android:defaultValue="true"
+        app:iconSpaceReserved="false" />
+
     <Preference
         android:key="manage_domain_lists"
         android:title="@string/domain_lists"

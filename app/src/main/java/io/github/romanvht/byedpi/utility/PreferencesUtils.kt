@@ -7,7 +7,12 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import io.github.romanvht.byedpi.data.Mode
 
-private const val DEFAULT_CMD_ARGS = "-o1 -a1 -r-5+se"
+// Start without modifying TCP, then automatically move through two increasingly
+// aggressive fallbacks when ByeDPI detects a reset, redirect, or broken TLS reply.
+// The selected group is cached by ByeDPI, so blocked hosts do not pay the detection
+// delay on every connection. UDP receives one harmless fake packet from the start.
+private const val DEFAULT_CMD_ARGS =
+    "-a1 -T3 -At,r,s -Lo,s -o1 -r-5+se -At,s -d1 -s1+s -d3+s -f-1 -Qr -n www.iana.org"
 
 val PreferenceFragmentCompat.sharedPreferences
     get() = preferenceScreen.sharedPreferences
