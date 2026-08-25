@@ -6,7 +6,7 @@
     <string name="vpn_disconnected">Bağlantı Kesildi (VPN)</string>
     <string name="vpn_permission_denied">VPN açma yetkisi yok.</string>
     <string name="failed_to_start">RayKos başlatılamadı</string>
-    <string name="proxy_address">%1$s:%2$s</string>
+    <string name="proxy_address">%1$s:%2$d</string>
     <string name="notification_title">RayKos</string>
     <string name="vpn_channel_name">RayKos</string>
     <string name="vpn_notification_content">RayKos çalışıyor</string>

@@ -6,7 +6,7 @@
     <string name="vpn_disconnected">Отключено (VPN)</string>
     <string name="vpn_permission_denied">Нет разрешения на активацию VPN</string>
     <string name="failed_to_start">Не удалось запустить RayKos</string>
-    <string name="proxy_address">%1$s:%2$s</string>
+    <string name="proxy_address">%1$s:%2$d</string>
     <string name="notification_title">RayKos</string>
     <string name="vpn_channel_name">RayKos</string>
     <string name="vpn_notification_content">RayKos работает</string>
