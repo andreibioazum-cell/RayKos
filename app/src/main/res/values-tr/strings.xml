@@ -135,7 +135,7 @@
     </string>
     <string name="test_process">Kontrol ediliyor %1$d/%2$d</string>
     <string name="test_proxy_error">Proxy hatası. Test durduruldu.</string>
-    <string name="test_good_cmds">%50 başarıya ulaşan komutlar</string>
+    <string name="test_good_cmds" formatted="false">%50 başarıya ulaşan komutlar</string>
     <string name="test_complete">Test tamamlandı</string>
     <string name="test_complete_info">Kullanmak veya kopyalamk için bir komuta basılı tut</string>
     <string name="test_cmd_connect">Uygula ve çalıştır</string>
@@ -145,7 +145,7 @@
     <string name="toast_copied">Sonuç kopyalandı</string>
     <string name="test_settings_sni">SNI sahte paketleri</string>
     <string name="test_stop_on_success">Çalışan bir stratejide dur</string>
-    <string name="test_stop_on_success_summary">İlk %100 sonuçtan sonra durarak testi hızlandırır</string>
+    <string name="test_stop_on_success_summary" formatted="false">İlk %100 sonuçtan sonra durarak testi hızlandırır</string>
     <string name="test_auto_apply">En iyi stratejiyi otomatik uygula</string>
     <string name="test_auto_apply_summary">Testten sonra en iyi başarılı sonucu kaydeder ve sabitler</string>
     <string name="test_auto_applied">En iyi strateji uygulandı ve sabitlendi</string>

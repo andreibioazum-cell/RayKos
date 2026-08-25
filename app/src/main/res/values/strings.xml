@@ -145,7 +145,7 @@
     <string name="toast_copied">Скопировано</string>
     <string name="test_settings_sni">SNI фейк пакетов</string>
     <string name="test_stop_on_success">Остановиться на рабочей стратегии</string>
-    <string name="test_stop_on_success_summary">Ускоряет подбор: проверка завершится после первого результата 100%</string>
+    <string name="test_stop_on_success_summary" formatted="false">Ускоряет подбор: проверка завершится после первого результата 100%</string>
     <string name="test_auto_apply">Применить лучшую стратегию автоматически</string>
     <string name="test_auto_apply_summary">Сохраняет и закрепляет лучший успешный результат после проверки</string>
     <string name="test_auto_applied">Лучшая стратегия применена и закреплена</string>
