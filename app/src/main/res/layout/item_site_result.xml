@@ -16,7 +16,7 @@
         android:layout_weight="1"
         android:textSize="12sp"
         android:ellipsize="end"
-        android:maxLines="1"/>
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/siteResultTextView"
