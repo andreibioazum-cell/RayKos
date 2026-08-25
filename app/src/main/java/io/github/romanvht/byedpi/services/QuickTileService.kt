@@ -6,9 +6,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.annotation.RequiresApi
-import io.github.romanvht.byedpi.data.*
-import io.github.romanvht.byedpi.utility.getPreferences
-import io.github.romanvht.byedpi.utility.mode
+import io.github.romanvht.byedpi.data.AppStatus
 
 @RequiresApi(Build.VERSION_CODES.N)
 class QuickTileService : TileService() {
@@ -46,23 +44,20 @@ class QuickTileService : TileService() {
     }
 
     private fun handleClick() {
-        val (status) = appStatus
-        val mode = getPreferences().mode()
-
-        when (status) {
-            AppStatus.Halted -> startService(mode)
+        when (appStatus) {
+            AppStatus.Halted -> startService()
             AppStatus.Running -> stopService()
         }
 
         Log.i(TAG, "Tile clicked")
     }
 
-    private fun startService(mode: Mode) {
-        if (mode == Mode.VPN && VpnService.prepare(this) != null) {
+    private fun startService() {
+        if (VpnService.prepare(this) != null) {
             return
         }
 
-        ServiceManager.start(this, mode)
+        ServiceManager.start(this)
         setState(Tile.STATE_ACTIVE)
     }
 
@@ -72,9 +67,7 @@ class QuickTileService : TileService() {
     }
 
     private fun updateStatus() {
-        val (status) = appStatus
-
-        val newState = when (status) {
+        val newState = when (appStatus) {
             AppStatus.Running -> Tile.STATE_ACTIVE
             AppStatus.Halted -> Tile.STATE_INACTIVE
         }

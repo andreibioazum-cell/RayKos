@@ -1,4 +1,5 @@
 <resources>
+    <!-- API 23+ only: white status bar icons over the black bar -->
     <style name="Theme.RayKos" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#FF1744</item>
         <item name="colorPrimaryVariant">#D50000</item>
@@ -16,13 +17,8 @@
 
         <item name="android:statusBarColor">#000000</item>
         <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <item name="materialCardViewStyle">@style/SmallShadowCard</item>
-    </style>
-
-    <style name="AppToolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
-
-    <style name="SmallShadowCard" parent="Widget.MaterialComponents.CardView">
-        <item name="cardElevation">1dp</item>
     </style>
 </resources>

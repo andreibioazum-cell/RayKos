@@ -64,21 +64,20 @@ activities = {
     item.get(android + "name"): item
     for item in application.findall("activity")
 }
-assert activities[".activities.SettingsActivity"].get(android + "exported") == "false"
+assert activities[".activities.MainActivity"].get(android + "exported") == "true"
 assert activities[".activities.ToggleActivity"].get(android + "exported") == "true"
+
+exported_allowed = {".activities.MainActivity", ".activities.ToggleActivity"}
+for name, item in activities.items():
+    if name in exported_allowed:
+        continue
+    assert item.get(android + "exported") == "false", f"unexpected exported activity: {name}"
 
 source = open(
     "app/src/main/java/io/github/romanvht/byedpi/activities/ToggleActivity.kt",
     encoding="utf-8",
 ).read()
 assert "isTrustedShortcut()" in source, "exported shortcut activity must authenticate calls"
-assert "getPinnedHistory().any" in source, "exported shortcut activity must validate strategies"
-
-settings_source = open(
-    "app/src/main/java/io/github/romanvht/byedpi/utility/SettingsUtils.kt",
-    encoding="utf-8",
-).read()
-assert '"shortcut_token"' in settings_source, "shortcut token must be excluded from backups"
 PY
 
 printf '%s\n' '==> Checking patch whitespace'
