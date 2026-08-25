@@ -14,7 +14,6 @@ import androidx.core.content.edit
 import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.data.AppStatus
 import io.github.romanvht.byedpi.data.FAILED_BROADCAST
-import io.github.romanvht.byedpi.data.RayKosConfig
 import io.github.romanvht.byedpi.data.STARTED_BROADCAST
 import io.github.romanvht.byedpi.data.STOPPED_BROADCAST
 import io.github.romanvht.byedpi.databinding.ActivityMainBinding
@@ -157,9 +156,6 @@ class MainActivity : BaseActivity() {
         val status = appStatus
 
         Log.i(TAG, "Updating status: $status")
-
-        binding.proxyAddress.text =
-            getString(R.string.proxy_address, RayKosConfig.PROXY_IP, RayKosConfig.PROXY_PORT)
 
         when (status) {
             AppStatus.Halted -> {

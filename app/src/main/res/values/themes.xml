@@ -1,21 +1,21 @@
 <resources>
     <style name="Theme.RayKos" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#D50000</item>
-        <item name="colorPrimaryVariant">#8E0000</item>
+        <item name="colorPrimary">#B71C1C</item>
+        <item name="colorPrimaryVariant">#8E1515</item>
         <item name="colorOnPrimary">#FFFFFF</item>
 
-        <item name="colorSecondary">#D50000</item>
-        <item name="colorSecondaryVariant">#8E0000</item>
+        <item name="colorSecondary">#B71C1C</item>
+        <item name="colorSecondaryVariant">#8E1515</item>
         <item name="colorOnSecondary">#FFFFFF</item>
 
-        <item name="colorSurface">#FFFFFF</item>
-        <item name="colorOnSurface">#000000</item>
+        <item name="colorSurface">#E8E8E8</item>
+        <item name="colorOnSurface">#212121</item>
 
-        <item name="android:windowBackground">#FFFFFF</item>
-        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="android:windowBackground">#E8E8E8</item>
+        <item name="android:colorBackground">#E8E8E8</item>
 
-        <item name="android:statusBarColor">#8E0000</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:statusBarColor">#8E1515</item>
+        <item name="android:navigationBarColor">#E8E8E8</item>
 
         <item name="materialCardViewStyle">@style/SmallShadowCard</item>
     </style>

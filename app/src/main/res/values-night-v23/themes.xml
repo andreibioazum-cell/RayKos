@@ -1,22 +1,22 @@
 <resources>
     <!-- API 23+ only: white status bar icons over the black bar -->
     <style name="Theme.RayKos" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FF1744</item>
-        <item name="colorPrimaryVariant">#D50000</item>
+        <item name="colorPrimary">#C62828</item>
+        <item name="colorPrimaryVariant">#8E1515</item>
         <item name="colorOnPrimary">#FFFFFF</item>
 
-        <item name="colorSecondary">#FF1744</item>
-        <item name="colorSecondaryVariant">#D50000</item>
+        <item name="colorSecondary">#C62828</item>
+        <item name="colorSecondaryVariant">#8E1515</item>
         <item name="colorOnSecondary">#FFFFFF</item>
 
-        <item name="colorSurface">#000000</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSurface">#424242</item>
+        <item name="colorOnSurface">#EEEEEE</item>
 
-        <item name="android:windowBackground">#000000</item>
-        <item name="android:colorBackground">#000000</item>
+        <item name="android:windowBackground">#424242</item>
+        <item name="android:colorBackground">#424242</item>
 
-        <item name="android:statusBarColor">#000000</item>
-        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:statusBarColor">#424242</item>
+        <item name="android:navigationBarColor">#424242</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <item name="materialCardViewStyle">@style/SmallShadowCard</item>
