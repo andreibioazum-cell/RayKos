@@ -1,12 +1,10 @@
 package io.github.romanvht.byedpi.activities
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.VpnService
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -156,12 +154,12 @@ class MainActivity : BaseActivity() {
             addAction(FAILED_BROADCAST)
         }
 
-        @SuppressLint("UnspecifiedRegisterReceiverFlag")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(receiver, intentFilter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            receiver,
+            intentFilter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
 
         binding.statusButtonCard.setOnClickListener {
             binding.statusButtonCard.isClickable = false

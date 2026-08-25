@@ -12,6 +12,7 @@ object DomainListUtils {
     private val gson = Gson()
 
     private fun getDefaultActiveIds(lang: String): Set<String> = when (lang) {
+        "ru" -> setOf("russia")
         "tr" -> setOf("türkiye", "discord")
         else -> setOf("youtube", "googlevideo")
     }

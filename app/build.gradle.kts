@@ -5,10 +5,24 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val abis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+val supportedAbis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+val abis = providers.gradleProperty("ABI_FILTERS").orNull
+    ?.split(',')
+    ?.map(String::trim)
+    ?.filter(String::isNotEmpty)
+    ?.toSet()
+    ?.also { requested ->
+        require(requested.isNotEmpty()) { "ABI_FILTERS must contain at least one ABI" }
+        require(requested.all { it in supportedAbis }) {
+            "Unsupported ABI in ABI_FILTERS. Supported values: ${supportedAbis.joinToString()}"
+        }
+    }
+    ?: supportedAbis
 
 android {
     namespace = "io.github.romanvht.byedpi"
+    // Keep CI and local native builds reproducible.
+    ndkVersion = "27.0.12077973"
     //noinspection GradleDependency
     compileSdk = 36
 
@@ -108,7 +122,8 @@ tasks.register<Exec>("runNdkBuild") {
         "NDK_PROJECT_PATH=build/intermediates/ndkBuild",
         "NDK_LIBS_OUT=src/main/jniLibs",
         "APP_BUILD_SCRIPT=src/main/jni/Android.mk",
-        "NDK_APPLICATION_MK=src/main/jni/Application.mk"
+        "NDK_APPLICATION_MK=src/main/jni/Application.mk",
+        "APP_ABI=${abis.joinToString(" ")}"
     ))
 
     println("Command: $commandLine")

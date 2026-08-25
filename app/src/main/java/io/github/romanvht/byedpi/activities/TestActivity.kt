@@ -224,6 +224,8 @@ class TestActivity : BaseActivity() {
             val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
             val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
             val requestLimit = prefs.getIntStringNotNull("byedpi_proxytest_limit", 20)
+            val stopOnSuccess = prefs.getBoolean("byedpi_proxytest_stop_on_success", true)
+            val autoApply = prefs.getBoolean("byedpi_proxytest_auto_apply", true)
 
             for (strategyIndex in strategies.indices) {
                 if (!isActive) break
@@ -237,11 +239,18 @@ class TestActivity : BaseActivity() {
 
                 updateCmdArgs(strategy.command)
 
-                if (isProxyRunning()) stopTesting()
-                else ServiceManager.start(this@TestActivity, Mode.Proxy)
+                if (isProxyRunning()) {
+                    ServiceManager.stop(this@TestActivity)
+                    if (!waitForProxyStatus(AppStatus.Halted)) {
+                        stopTesting()
+                        return@launch
+                    }
+                }
+                ServiceManager.start(this@TestActivity, Mode.Proxy)
 
                 if (!waitForProxyStatus(AppStatus.Running)) {
                     stopTesting()
+                    return@launch
                 }
 
                 delay(delaySec * 500L)
@@ -277,47 +286,79 @@ class TestActivity : BaseActivity() {
                     saveResults(strategies)
                 }
 
-                if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
-                else stopTesting()
+                if (isProxyRunning()) {
+                    ServiceManager.stop(this@TestActivity)
+                } else {
+                    stopTesting()
+                    return@launch
+                }
 
                 if (!waitForProxyStatus(AppStatus.Halted)) {
                     stopTesting()
+                    return@launch
+                }
+
+                if (stopOnSuccess && strategy.successCount == strategy.totalRequests) {
+                    break
                 }
 
                 delay(delaySec * 500L)
             }
 
-            stopTesting()
+            stopTesting(applyBest = autoApply)
         }
     }
 
-    private fun stopTesting() {
-        if (!isTesting) {
-            return
+    private fun stopTesting(applyBest: Boolean = false) {
+        if (!isTesting) return
+
+        val bestCommand = if (applyBest) {
+            strategies
+                .filter { it.isCompleted && it.successCount > 0 }
+                .maxWithOrNull(
+                    compareBy<StrategyResult> { it.successPercentage }
+                        .thenBy { it.successCount }
+                )
+                ?.command
+        } else {
+            null
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            isTesting = false
-            updateCmdArgs(savedCmd)
+        isTesting = false
+        val runningJob = testJob
+        testJob = null
 
-            testJob?.cancel()
-            testJob = null
+        // Restore/apply before launching asynchronous cleanup. This also keeps the
+        // command consistent when the user leaves the activity immediately.
+        updateCmdArgs(bestCommand ?: savedCmd)
+        if (bestCommand != null) {
+            cmdHistoryUtils.addCommand(bestCommand)
+            cmdHistoryUtils.pinCommand(bestCommand)
+        }
 
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-            }
+        if (appStatus.first == AppStatus.Running) {
+            ServiceManager.stop(this@TestActivity)
+        }
 
-            withContext(Dispatchers.Main) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                startStopButton.text = getString(R.string.test_start)
-                progressTextView.text = getString(R.string.test_complete)
+        lifecycleScope.launch(Dispatchers.Main) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            startStopButton.text = getString(R.string.test_start)
+            progressTextView.text = getString(R.string.test_complete)
 
-                strategyAdapter.setTestingState(false)
-                strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+            strategyAdapter.setTestingState(false)
+            strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+            saveResults(strategies)
 
-                saveResults(strategies)
+            if (bestCommand != null) {
+                Toast.makeText(
+                    this@TestActivity,
+                    R.string.test_auto_applied,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
+
+        runningJob?.cancel()
     }
 
     private fun addToHistory(command: String) {

@@ -144,6 +144,11 @@
     <string name="test_log_copy">Copy log</string>
     <string name="toast_copied">Сopied</string>
     <string name="test_settings_sni">SNI fake packets</string>
+    <string name="test_stop_on_success">Stop at a working strategy</string>
+    <string name="test_stop_on_success_summary">Speeds up testing by stopping after the first 100% result</string>
+    <string name="test_auto_apply">Apply the best strategy automatically</string>
+    <string name="test_auto_apply_summary">Saves and pins the best successful result after testing</string>
+    <string name="test_auto_applied">The best strategy was applied and pinned</string>
     <string name="test_settings_fulllog">Host response output</string>
     <string name="test_settings_logclickable">All commands are clickable</string>
     <string name="test_settings_domain_lists">Domain lists for testing</string>

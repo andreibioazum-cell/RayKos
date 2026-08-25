@@ -12,6 +12,8 @@ import io.github.romanvht.byedpi.data.AppStatus
 import io.github.romanvht.byedpi.data.Mode
 import io.github.romanvht.byedpi.services.ServiceManager
 import io.github.romanvht.byedpi.services.appStatus
+import io.github.romanvht.byedpi.utility.HistoryUtils
+import io.github.romanvht.byedpi.utility.ShortcutUtils
 import io.github.romanvht.byedpi.utility.getCmdArgs
 import io.github.romanvht.byedpi.utility.getPreferences
 import io.github.romanvht.byedpi.utility.mode
@@ -28,39 +30,23 @@ class ToggleActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         prefs = getPreferences()
+        if (!isTrustedShortcut()) {
+            Log.w(TAG, "Rejected untrusted shortcut invocation")
+            finish()
+            return
+        }
+
         val strategy = intent.getStringExtra("strategy")
         val updated = updateStrategy(strategy)
 
-        val onlyUpdate = intent.getBooleanExtra("only_update", false)
-        val onlyStart = intent.getBooleanExtra("only_start", false)
-        val onlyStop = intent.getBooleanExtra("only_stop", false)
-
-        when {
-            onlyUpdate -> {
-                Log.i(TAG, "Only update strategy")
-            }
-            onlyStart -> {
-                val (status) = appStatus
-                if (status == AppStatus.Halted) {
-                    startService()
-                } else {
-                    Log.i(TAG, "Service already running")
-                }
-            }
-            onlyStop -> {
-                val (status) = appStatus
-                if (status == AppStatus.Running) {
-                    stopService()
-                } else {
-                    Log.i(TAG, "Service already stopped")
-                }
-            }
-            else -> {
-                toggleService(updated)
-            }
-        }
-
+        toggleService(updated)
         finish()
+    }
+
+    private fun isTrustedShortcut(): Boolean {
+        val expected = prefs.getString(ShortcutUtils.TOKEN_EXTRA, null) ?: return false
+        val supplied = intent.getStringExtra(ShortcutUtils.TOKEN_EXTRA) ?: return false
+        return supplied == expected
     }
 
     private fun startService() {
@@ -107,10 +93,22 @@ class ToggleActivity : Activity() {
     }
 
     private fun updateStrategy(strategy: String?): Boolean {
+        if (strategy == null) return false
+
+        // This activity has to stay exported because Android launchers invoke the
+        // dynamic shortcuts from another process. Never accept an arbitrary command
+        // from that exported entry point: only currently pinned shortcut strategies
+        // are valid.
+        val isPinnedShortcut = HistoryUtils(this).getPinnedHistory().any { it.text == strategy }
+        if (!isPinnedShortcut) {
+            Log.w(TAG, "Rejected strategy that is not a pinned shortcut")
+            return false
+        }
+
         val current = prefs.getCmdArgs()
-        if (strategy != null && strategy != current) {
+        if (strategy != current) {
             prefs.edit(commit = true) { putString("byedpi_cmd_args", strategy) }
-            Log.i(TAG, "Strategy updated to: $strategy")
+            Log.i(TAG, "Strategy updated from a pinned shortcut")
             return true
         }
         return false
