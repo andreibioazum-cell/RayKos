@@ -14,8 +14,19 @@ import io.github.romanvht.byedpi.activities.MainActivity
 import io.github.romanvht.byedpi.core.ByeDpiProxy
 import io.github.romanvht.byedpi.core.ByeDpiProxyPreferences
 import io.github.romanvht.byedpi.core.TProxyService
-import io.github.romanvht.byedpi.data.*
-import io.github.romanvht.byedpi.utility.*
+import io.github.romanvht.byedpi.data.AppStatus
+import io.github.romanvht.byedpi.data.FAILED_BROADCAST
+import io.github.romanvht.byedpi.data.PAUSE_ACTION
+import io.github.romanvht.byedpi.data.RESUME_ACTION
+import io.github.romanvht.byedpi.data.ServiceStatus
+import io.github.romanvht.byedpi.data.START_ACTION
+import io.github.romanvht.byedpi.data.STARTED_BROADCAST
+import io.github.romanvht.byedpi.data.STOP_ACTION
+import io.github.romanvht.byedpi.data.STOPPED_BROADCAST
+import io.github.romanvht.byedpi.data.RayKosConfig
+import io.github.romanvht.byedpi.utility.createConnectionNotification
+import io.github.romanvht.byedpi.utility.createPauseNotification
+import io.github.romanvht.byedpi.utility.registerNotificationChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -94,12 +105,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
             SERVICE_INTERFACE -> {
                 Log.i(TAG, "Started by Android")
-
-                if (getPreferences().mode() != Mode.VPN) {
-                    Log.w(TAG, "Always-On disabled in proxy mode")
-                    stopSelf()
-                    return START_NOT_STICKY
-                }
 
                 lifecycleScope.launch {
                     start()
@@ -190,7 +195,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             throw IllegalStateException("Proxy fields not null")
         }
 
-        val preferences = getByeDpiPreferences()
+        val preferences = ByeDpiProxyPreferences()
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = byeDpiProxy.startProxy(preferences)
@@ -246,12 +251,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             throw IllegalStateException("VPN field not null")
         }
 
-        val sharedPreferences = getPreferences()
-        val (ip, port) = sharedPreferences.getProxyIpAndPort()
-
-        val dns = sharedPreferences.getStringNotNull("dns_ip", "1.1.1.1")
-        val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
-
         val tun2socksConfig = buildString {
             appendLine("tunnel:")
             appendLine("  mtu: 8500")
@@ -260,8 +259,8 @@ class ByeDpiVpnService : LifecycleVpnService() {
             appendLine("  task-stack-size: 81920")
 
             appendLine("socks5:")
-            appendLine("  address: $ip")
-            appendLine("  port: $port")
+            appendLine("  address: ${RayKosConfig.PROXY_IP}")
+            appendLine("  port: ${RayKosConfig.PROXY_PORT}")
             appendLine("  udp: udp")
         }
 
@@ -274,14 +273,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
             throw e
         }
 
-        val fd = createBuilder(dns, ipv6).establish()
+        val fd = createBuilder(RayKosConfig.DNS_IP, RayKosConfig.IPV6_ENABLED).establish()
             ?: throw IllegalStateException("VPN connection failed")
 
         this.tunFd = fd
 
         TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
 
-        Log.i(TAG, "Tun2Socks started. ip: $ip port: $port")
+        Log.i(TAG, "Tun2Socks started. ip: ${RayKosConfig.PROXY_IP} port: ${RayKosConfig.PROXY_PORT}")
     }
 
     private fun stopTun2Socks() {
@@ -312,11 +311,8 @@ class ByeDpiVpnService : LifecycleVpnService() {
             tunFd = null
         }
 
-        Log.i(TAG, "Tun2socks stopped")
+        Log.i(TAG, "Tun2Socks stopped")
     }
-
-    private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
-        ByeDpiProxyPreferences.fromSharedPreferences(getPreferences(), this)
 
     private fun updateStatus(newStatus: ServiceStatus) {
         Log.d(TAG, "VPN status changed from $status to $newStatus")
@@ -326,14 +322,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
         setStatus(
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
-
                 ServiceStatus.Disconnected,
                 ServiceStatus.Failed -> {
                     proxyJob = null
                     AppStatus.Halted
                 }
-            },
-            Mode.VPN
+            }
         )
 
         val intent = Intent(
@@ -343,7 +337,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 ServiceStatus.Failed -> FAILED_BROADCAST
             }
         )
-        intent.putExtra(SENDER, Sender.VPN.ordinal)
         sendBroadcast(intent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -376,7 +369,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
-        builder.setSession("ByeDPI")
+        builder.setSession("RayKos")
         builder.setConfigureIntent(
             PendingIntent.getActivity(
                 this,
@@ -400,38 +393,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
-        }
-
-        val preferences = getPreferences()
-        val listType = preferences.getStringNotNull("applist_type", "disable")
-        val listedApps = preferences.getSelectedApps()
-
-        when (listType) {
-            "blacklist" -> {
-                for (packageName in listedApps) {
-                    try {
-                        builder.addDisallowedApplication(packageName)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Не удалось добавить приложение $packageName в черный список", e)
-                    }
-                }
-
-                builder.addDisallowedApplication(applicationContext.packageName)
-            }
-
-            "whitelist" -> {
-                for (packageName in listedApps) {
-                    try {
-                        builder.addAllowedApplication(packageName)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Не удалось добавить приложение $packageName в белый список", e)
-                    }
-                }
-            }
-
-            "disable" -> {
-                builder.addDisallowedApplication(applicationContext.packageName)
-            }
         }
 
         return builder

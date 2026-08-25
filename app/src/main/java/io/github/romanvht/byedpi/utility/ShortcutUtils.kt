@@ -18,7 +18,6 @@ object ShortcutUtils {
     fun update(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             val shortcutManager = context.getSystemService(ShortcutManager::class.java)
-            val shortcuts = mutableListOf<ShortcutInfo>()
             val prefs = context.getPreferences()
             val token = prefs.getString(TOKEN_PREFERENCE, null) ?: UUID.randomUUID().toString().also {
                 prefs.edit { putString(TOKEN_PREFERENCE, it) }
@@ -37,37 +36,7 @@ object ShortcutUtils {
                 .setIntent(toggleIntent)
                 .build()
 
-            shortcuts.add(toggleShortcut)
-
-            if (context.getPreferences().getCmdEnable()) {
-                val history = HistoryUtils(context)
-                val pinned = history.getHistory().filter { it.pinned }.take(3)
-
-                pinned.forEachIndexed { index, strategy ->
-                    val strategyIntent = Intent(context, ToggleActivity::class.java).apply {
-                        action = Intent.ACTION_VIEW
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        putExtra(TOKEN_EXTRA, token)
-                        putExtra("strategy", strategy.text)
-                    }
-
-                    val fullLabel = strategy.name?.takeIf { it.isNotBlank() } ?: strategy.text
-                    val shortLabel = if (fullLabel.length > 15) fullLabel.take(15) + "..." else fullLabel
-                    val longLabel = if (fullLabel.length > 30) fullLabel.take(30) + "..." else fullLabel
-
-                    val commandShortcut = ShortcutInfo.Builder(context, "strategy_$index")
-                        .setShortLabel(shortLabel)
-                        .setLongLabel(longLabel)
-                        .setIcon(Icon.createWithResource(context, R.drawable.ic_pin))
-                        .setIntent(strategyIntent)
-                        .build()
-
-                    shortcuts.add(commandShortcut)
-                }
-            }
-
-            shortcutManager.dynamicShortcuts = shortcuts
+            shortcutManager.dynamicShortcuts = mutableListOf(toggleShortcut)
         }
     }
-
 }

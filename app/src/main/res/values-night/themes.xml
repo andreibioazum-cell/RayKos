@@ -1,27 +1,30 @@
 <resources>
-    <style name="Theme.ByeDPI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FFFFFF</item>
-        <item name="colorPrimaryVariant">#E5E5E5</item>
-        <item name="colorOnPrimary">#000000</item>
+    <style name="Theme.RayKos" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF1744</item>
+        <item name="colorPrimaryVariant">#D50000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
 
-        <item name="colorSecondary">#5976DF</item>
-        <item name="colorSecondaryVariant">#3C52A3</item>
+        <item name="colorSecondary">#FF1744</item>
+        <item name="colorSecondaryVariant">#D50000</item>
         <item name="colorOnSecondary">#FFFFFF</item>
 
+        <item name="colorSurface">#000000</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:colorBackground">#000000</item>
+
         <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
         <item name="materialCardViewStyle">@style/SmallShadowCard</item>
     </style>
 
-    <style name="AppToolbar" parent="Widget.MaterialComponents.Toolbar.Surface" />
+    <style name="AppToolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
 
-    <style name="CircleButton" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">60dp</item>
-        <item name="android:textSize">0sp</item>
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimary</item>
-    </style>
-
-    <style name="CustomAlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <!-- -->
+    <style name="SmallShadowCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">1dp</item>
     </style>
 </resources>
