@@ -145,7 +145,7 @@
     <string name="toast_copied">Нәтиже көшірілген</string>
     <string name="test_settings_sni">SNI жалған пакеттері</string>
     <string name="test_stop_on_success">Жұмыс істейтін стратегияда тоқтау</string>
-    <string name="test_stop_on_success_summary">Алғашқы 100% нәтижеден кейін тоқтап, тексеруді жылдамдатады</string>
+    <string name="test_stop_on_success_summary" formatted="false">Алғашқы 100% нәтижеден кейін тоқтап, тексеруді жылдамдатады</string>
     <string name="test_auto_apply">Үздік стратегияны автоматты түрде қолдану</string>
     <string name="test_auto_apply_summary">Тексеруден кейін үздік сәтті нәтижені сақтап, бекітеді</string>
     <string name="test_auto_applied">Үздік стратегия қолданылды және бекітілді</string>
