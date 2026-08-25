@@ -253,7 +253,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         val tun2socksConfig = buildString {
             appendLine("tunnel:")
-            appendLine("  mtu: 8500")
+            appendLine("  mtu: 1500")
 
             appendLine("misc:")
             appendLine("  task-stack-size: 81920")
@@ -261,7 +261,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             appendLine("socks5:")
             appendLine("  address: ${RayKosConfig.PROXY_IP}")
             appendLine("  port: ${RayKosConfig.PROXY_PORT}")
-            appendLine("  udp: udp")
         }
 
         val configPath = try {
@@ -379,8 +378,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             )
         )
 
+        builder.setMtu(1500)
         builder.addAddress("10.10.10.10", 32)
             .addRoute("0.0.0.0", 0)
+            .addDnsServer("8.8.4.4")
 
         if (ipv6) {
             builder.addAddress("fd00::1", 128)

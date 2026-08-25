@@ -2,8 +2,8 @@
     <string name="app_name">RayKos</string>
     <string name="toggle_connect">On/Off</string>
     <string name="vpn_connect">Connect</string>
-    <string name="vpn_connected">Connected (VPN)</string>
-    <string name="vpn_disconnected">Disconnected (VPN)</string>
+    <string name="vpn_connected">Connected</string>
+    <string name="vpn_disconnected">Disconnected</string>
     <string name="vpn_permission_denied">No permission to activate VPN</string>
     <string name="failed_to_start">Failed to start RayKos</string>
     <string name="proxy_address">%1$s:%2$d</string>
